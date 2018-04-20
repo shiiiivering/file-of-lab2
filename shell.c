@@ -40,10 +40,12 @@ int main() {
         pid_t pid_;
         char buf[1024];
         int pfd[2], chfd[2];
-
+        int p;
+        bool ifpipe = false;
         
-        for(int p = ins; args[p]; p++){
+        for(p = ins; args[p]; p++){
             if(*args[p] == '|'){
+                ifpipe = true;
                 *args[p] = '\n';
                 if(pipe(chfd) == -1){
                     printf("pipe error");
@@ -67,6 +69,11 @@ int main() {
                 }
             }
         }
+        if(!args[p]){
+            close(chfd[1]);
+            pfd[0] = chfd[0];
+            dup2(pfd[0], STDIN_FILENO);
+        }
         
 
         /* 内建命令 */
@@ -87,12 +94,24 @@ int main() {
         pid_t pid = fork();
         if (pid == 0) {
             /* 子进程 */
+            dup2(fd[1], STDOUT_FILENO);
             execvp(args[0], args);
             /* execvp失败 */
             return 255;
         }
+        /*当前部分执行完毕判断是否是父进程，并执行关闭管道等相应操作*/
+        if(pid_this != getpid()){   //如果是子进程则结束进程
+            close(chfd[1]);
+            close(pfd[0]);
+            wait(NULL);
+            return 0;
+        }
+        else if(ifpipe){            //如果不是则等待子进程执行完毕后继续进入下一个循环
+            close(chfd[1]);
+            dup2(STDOUT_FILENO, STDOUT_FILENO);
+        }
         /* 父进程 */
         wait(NULL);
-        if()
+        
     }
 }
