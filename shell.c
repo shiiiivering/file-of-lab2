@@ -109,6 +109,7 @@ int main() {
         else if(ifpipe){            //如果不是则等待子进程执行完毕后继续进入下一个循环
             close(chfd[1]);
             dup2(STDOUT_FILENO, STDOUT_FILENO);
+            dup2(STDIN_FILENO, STDOIN_FILENO);
         }
         /* 父进程 */
         wait(NULL);
