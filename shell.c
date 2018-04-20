@@ -77,17 +77,17 @@ int main() {
         
 
         /* 内建命令 */
-        if (strcmp(args[0], "cd") == 0) {
-            if (args[1])
-                chdir(args[1]);
+        if (strcmp(args[ins], "cd") == 0) {
+            if (args[ins + 1])
+                chdir(args[ins + 1]);
             continue;
         }
-        if (strcmp(args[0], "pwd") == 0) {
+        if (strcmp(args[ins], "pwd") == 0) {
             char wd[4096];
             puts(getcwd(wd, 4096));
             continue;
         }
-        if (strcmp(args[0], "exit") == 0)
+        if (strcmp(args[ins], "exit") == 0)
             return 0;
 
         /* 外部命令 */
@@ -95,7 +95,7 @@ int main() {
         if (pid == 0) {
             /* 子进程 */
             dup2(fd[1], STDOUT_FILENO);
-            execvp(args[0], args);
+            execvp(args[ins], args + ins);
             /* execvp失败 */
             return 255;
         }
