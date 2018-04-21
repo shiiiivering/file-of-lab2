@@ -62,7 +62,7 @@ int main() {
             }
             for(p = ins; args[p]; p++){
                 if(*args[p] == '|'){
-                    *args[p] = '\n';
+                    *args[p] = '\0';
                     if(pipe(chfd) == -1){
                         printf("pipe error");
                         exit(1);
