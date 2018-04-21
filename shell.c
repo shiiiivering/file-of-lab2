@@ -50,9 +50,9 @@ int main() {
                 printf("fork error");
                 exit(1);
             }
-            else if(pid_ == 1){
+            else if(pid_ != 0){
                 wait(NULL);
-                continue
+                continue;
             }
         for(p = ins; args[p]; p++){
             if(*args[p] == '|'){
@@ -91,24 +91,22 @@ int main() {
         if (strcmp(args[ins], "cd") == 0) {
             if (args[ins + 1])
                 chdir(args[ins + 1]);
-            continue;
+            
         }
         if (strcmp(args[ins], "pwd") == 0) {
             char wd[4096];
             puts(getcwd(wd, 4096));
-            continue;
+            
         }
         if (strcmp(args[ins], "exit") == 0)
             return 0;
 
         /* 外部命令 */
-        pid_t pid = fork();
-        if (pid == 0) {
-            /* 子进程 */
+        else{
             dup2(fd[1], STDOUT_FILENO);
             execvp(args[ins], args + ins);
             /* execvp失败 */
-            return 255;
+            
         }
         /*当前部分执行完毕判断是否是父进程，并执行关闭管道等相应操作*/
         if(pid_this != getpid()){   //如果是子进程则结束进程
@@ -117,11 +115,11 @@ int main() {
             wait(NULL);
             return 0;
         }
-        else if(ifpipe){            //如果不是则等待子进程执行完毕后继续进入下一个循环
+        /*else if(ifpipe){            //如果不是则等待子进程执行完毕后继续进入下一个循环
             close(chfd[1]);
             dup2(STDOUT_FILENO, STDOUT_FILENO);
-            dup2(STDIN_FILENO, STDOIN_FILENO);
-        }
+            dup2(STDIN_FILENO, STDIN_FILENO);
+        }*/
         /* 父进程 */
         wait(NULL);
         
