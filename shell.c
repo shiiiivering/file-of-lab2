@@ -30,13 +30,15 @@ int main() {
         int ifpipe = 0;
         args[0] = cmd;
         for (i = 0; *args[i]; i++)
-            for (args[i+1] = args[i] + 1; *args[i+1]; args[i+1]++)
+            for (args[i+1] = args[i] + 1; *args[i+1]; args[i+1]++){
                 if(*args[i + 1] == '|')ifpipe = 1;
                 if (*args[i+1] == ' ') {
                     *args[i+1] = '\0';
                     args[i+1]++;
                     break;
                 }
+            }
+        printf("拆解命令行成功\n");
         args[i] = NULL;
 
         /* 没有输入命令 */
