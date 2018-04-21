@@ -11,14 +11,16 @@ int main() {
     /* 命令行拆解成的各部分，以空指针结尾 */
     char *args[128];
     /*获取当前进程pid*/
-    printf("set arrey succeed");
+    printf("\nset arrey succeed\n");
     pid_t pid_this = getpid();
-    printf("getpid succeed");
+    printf("getpid succeed\n");
     while (1) {
         /* 提示符 */
         printf("# ");
         fflush(stdin);
+        printf("flush succeed\n");
         fgets(cmd, 256, stdin);
+        printf("gets succeed\n");
         /* 清理结尾的换行符 */
         int i;
         for (i = 0; cmd[i] != '\n'; i++)
