@@ -69,7 +69,7 @@ int main() {
                 else if(pid_ == 0){
                     close(chfd[1]);
                     pfd[0] = chfd[0];
-                    dup2(pfd[0], STDIN_FINENO);
+                    dup2(pfd[0], STDIN_FILENO);
                     ins = p + 1;
                 }
                 else{
