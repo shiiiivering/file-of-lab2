@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <stdlib.h>
 
 int main() {
     /* 输入的命令行 */
@@ -22,9 +23,11 @@ int main() {
             ;
         cmd[i] = '\0';
         /* 拆解命令行 */
+        int ifpipe = 0;
         args[0] = cmd;
         for (i = 0; *args[i]; i++)
             for (args[i+1] = args[i] + 1; *args[i+1]; args[i+1]++)
+                if(*args[i + 1] == '|')ifpipe = 1;
                 if (*args[i+1] == ' ') {
                     *args[i+1] = '\0';
                     args[i+1]++;
@@ -41,11 +44,18 @@ int main() {
         char buf[1024];
         int pfd[2], chfd[2];
         int p;
-        bool ifpipe = false;
-        
+        if(ifpipe){
+            pid_ = fork();
+            if(pid_ < 0){
+                printf("fork error");
+                exit(1);
+            }
+            else if(pid_ == 1){
+                wait(NULL);
+                continue
+            }
         for(p = ins; args[p]; p++){
             if(*args[p] == '|'){
-                ifpipe = true;
                 *args[p] = '\n';
                 if(pipe(chfd) == -1){
                     printf("pipe error");
@@ -64,10 +74,11 @@ int main() {
                 }
                 else{
                     close(chfd[0]);
-                    dup2(fd[1], STDOUT_FILENO);
+                    dup2(chfd[1], STDOUT_FILENO);
                     break;
                 }
             }
+        }
         }
         if(!args[p]){
             close(chfd[1]);
