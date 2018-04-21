@@ -103,7 +103,7 @@ int main() {
 
         /* 外部命令 */
         else{
-            dup2(fd[1], STDOUT_FILENO);
+            //dup2(fd[1], STDOUT_FILENO);
             execvp(args[ins], args + ins);
             /* execvp失败 */
             
