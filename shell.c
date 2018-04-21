@@ -11,7 +11,9 @@ int main() {
     /* 命令行拆解成的各部分，以空指针结尾 */
     char *args[128];
     /*获取当前进程pid*/
+    printf("set arrey succeed");
     pid_t pid_this = getpid();
+    printf("getpid succeed");
     while (1) {
         /* 提示符 */
         printf("# ");
@@ -54,31 +56,31 @@ int main() {
                 wait(NULL);
                 continue;
             }
-        for(p = ins; args[p]; p++){
-            if(*args[p] == '|'){
-                *args[p] = '\n';
-                if(pipe(chfd) == -1){
-                    printf("pipe error");
-                    exit(1);
-                }
-                pid_ = fork();
-                if(pid_ < 0){
-                    printf("fork error");
-                    exit(1);
-                }
-                else if(pid_ == 0){
-                    close(chfd[1]);
-                    pfd[0] = chfd[0];
-                    dup2(pfd[0], STDIN_FILENO);
-                    ins = p + 1;
-                }
-                else{
-                    close(chfd[0]);
-                    dup2(chfd[1], STDOUT_FILENO);
-                    break;
+            for(p = ins; args[p]; p++){
+                if(*args[p] == '|'){
+                    *args[p] = '\n';
+                    if(pipe(chfd) == -1){
+                        printf("pipe error");
+                        exit(1);
+                    }
+                    pid_ = fork();
+                    if(pid_ < 0){
+                        printf("fork error");
+                        exit(1);
+                    }
+                    else if(pid_ == 0){
+                        close(chfd[1]);
+                        pfd[0] = chfd[0];
+                        dup2(pfd[0], STDIN_FILENO);
+                        ins = p + 1;
+                    }
+                    else{
+                        close(chfd[0]);
+                        dup2(chfd[1], STDOUT_FILENO);
+                        break;
+                    }
                 }
             }
-        }
         }
         if(!args[p]){
             close(chfd[1]);
